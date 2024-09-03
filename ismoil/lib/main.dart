@@ -1,185 +1,92 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: bir(),
-    ),
-  );
+  runApp(MaterialApp(home: Stri()));
 }
 
-class bir extends StatefulWidget {
-  const bir({super.key});
+class Stri extends StatefulWidget {
+  const Stri({super.key});
 
   @override
-  State<bir> createState() => _birState();
+  State<Stri> createState() => _StriState();
 }
 
-class _birState extends State<bir> {
-  // State to keep track of the selected star index
-  int selectedStar = 0;
+class _StriState extends State<Stri> {
+  TextEditingController input = TextEditingController();
 
-  // State to keep track of the text value
-  int textCount = 1;
-  String topRightText = 'R1';
+  List<String> haftaningKunlari = [
+    'dushanba',
+    "domla",
+    "doska",
+    'seshanba',
+    "sel",
+    'chorshanba',
+    "choch",
+    "chol",
+    'payshanba',
+    "popka",
+    "poyga",
+    'juma',
+    "jumAN",
+    "joja",
+    'shanba',
+    "shashka",
+    'yakshanba',
+    "yaxyo",
+    "yonbosar",
+    "sahro",
+    "sanam"
+  ];
 
-  // State to manage the visibility of the input field in the top right
-  bool isTopRightEditing = false;
-
-  // State to keep track of the center text
-  String centerText = "Nazarov O";
-
-  // State to show/hide the input field
-  bool isEditing = false;
-
-  // Controller to manage the input field text
-  TextEditingController _controller = TextEditingController();
-  TextEditingController _topRightController = TextEditingController();
-
-  // Function to change the selected star
-  void _onStarTap(int index) {
-    setState(() {
-      selectedStar = index;
-    });
-  }
-
-  // Function to update the top-right text value when tapped
-  void _toggleTopRightEditing() {
-    setState(() {
-      isTopRightEditing = true;
-      _topRightController.text = topRightText; // Set the current text in the input field
-    });
-  }
-
-  // Function to save the new top-right text value
-  void _saveTopRightText() {
-    setState(() {
-      topRightText = _topRightController.text;
-      isTopRightEditing = false;
-    });
-  }
-
-  // Function to toggle between text and input field in the center
-  void _toggleEditing() {
-    setState(() {
-      isEditing = !isEditing;
-      _controller.text = centerText; // Set the current text in the input field
-    });
-  }
-
-  // Function to save the new center text value
-  void _saveText() {
-    setState(() {
-      centerText = _controller.text; // Update the center text with input value
-      isEditing = false; // Hide the input field
-    });
-  }
+  String? haf;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.amber,
-            image: DecorationImage(
-              image: AssetImage("rasm/rasm17.jpg"),
-              fit: BoxFit.cover,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: input,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'So\'z kiriting',
+              ),
+              onChanged: (text) {
+                setState(() {
+                  if (text.isEmpty) {
+                    // Agar matn bo'sh bo'lsa, `haf` ni bo'sh qilamiz
+                    haf = '';
+                  } else {
+                    // Mos keladigan barcha kunlarni topish va bitta stringga birlashtirish
+                    List<String> mosKunlar = haftaningKunlari.where(
+                      (kun) => kun.startsWith(text.toLowerCase()),
+                    ).toList();
+                    
+                    haf = mosKunlar.join(', ');  // Kunni vergul bilan ajratib birlashtirish
+                  }
+                });
+              },
             ),
-          ),
-          height: 400,
-          width: 600,
-          child: Stack(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start, // Aligns stars to the left
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: List.generate(5, (index) {
-                      return IconButton(
-                        icon: Icon(
-                          Icons.star,
-                          color: index < selectedStar ? Colors.amber : Colors.grey,
-                        ),
-                        onPressed: () {
-                          _onStarTap(index + 1); // Update the selected star index
-                        },
-                      );
-                    }),
-                  ),
-                ],
+            SizedBox(height: 20),
+            Container(
+              height: 100,
+              width: double.infinity, // To'liq kenglikni egallash uchun
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 2),
               ),
-              // Top-right text (R1, R2, ...)
-              Positioned(
-                top: 10,
-                right: 10,
-                child: isTopRightEditing
-                    ? Container(
-                        width: 80, // Small input field
-                        child: TextField(
-                          controller: _topRightController,
-                          onSubmitted: (_) => _saveTopRightText(),
-                          decoration: InputDecoration(
-                            hintText: "Enter text",
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      )
-                    : GestureDetector(
-                        onTap: _toggleTopRightEditing,
-                        child: Text(
-                          topRightText,
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-              ),
-              // Bottom-right date text
-              Positioned(
-                bottom: 10, // Position the text at the bottom-right corner
-                right: 10,
+              child: SingleChildScrollView(
                 child: Text(
-                  '31.07.2024',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  haf ?? '',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18),
                 ),
               ),
-              // Center text (Nazarov O)
-              Center(
-                child: isEditing
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: TextField(
-                          controller: _controller,
-                          onSubmitted: (_) => _saveText(),
-                          decoration: InputDecoration(
-                            hintText: "Enter new text",
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      )
-                    : GestureDetector(
-                        onTap: _toggleEditing, // Toggle to input field on tap
-                        child: Text(
-                          centerText,
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
